@@ -1,60 +1,35 @@
 <html>
 
 <head>
-    <title> SPARQL JavaScript </title>
+
+</head>
+
+<body>
+        <div id="results">
+                <h2>Sample Data</h2>
+            </div>
     <script>
-        /**
-         * Author: Mark Wallace
-         *
-         * This function asynchronously issues a SPARQL query to a
-         * SPARQL endpoint, and invokes the callback function with the JSON 
-         * Format [1] results.
-         *
-         * Refs:
-         * [1] http://www.w3.org/TR/sparql11-results-json/
-         */
-        function sparqlQueryJson(queryStr, endpoint, callback, isDebug) {
+        function sparqlQueryJson(queryStr, endpoint) {
             var querypart = "query=" + escape(queryStr);
 
             // Get our HTTP request object.
             var xmlhttp = null;
-            if (window.XMLHttpRequest) {
-                xmlhttp = new XMLHttpRequest();
-            } else if (window.ActiveXObject) {
-                // Code for older versions of IE, like IE6 and before.
-                xmlhttp = new ActiveXObject("Microsoft.XMLHTTP");
-            } else {
-                alert('Perhaps your browser does not support XMLHttpRequests?');
-            }
+
+            xmlhttp = new XMLHttpRequest();
+
 
             // Set up a POST with JSON result format.
-            xmlhttp.open('POST', endpoint, true); // GET can have caching probs, so POST
+            xmlhttp.open('POST', endpoint, false); // GET can have caching probs, so POST
             xmlhttp.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
             xmlhttp.setRequestHeader("Accept", "application/sparql-results+json");
 
-            // Set up callback to get the response asynchronously.
-            xmlhttp.onreadystatechange = function () {
-                if (xmlhttp.readyState == 4) {
-                    if (xmlhttp.status == 200) {
-                        // Do something with the results
-                        if (isDebug) alert(xmlhttp.responseText);
-                        callback(xmlhttp.responseText);
-                    } else {
-                        // Some kind of error occurred.
-                        alert("Sparql query error: " + xmlhttp.status + " "
-                            + xmlhttp.responseText);
-                    }
-                }
-            };
             // Send the query to the endpoint.
             xmlhttp.send(querypart);
 
+            return xmlhttp.responseText;
             // Done; now just wait for the callback to be called.
         };
     </script>
-</head>
-
-<body>
     <script>
         var endpoint1 = "http://data.nobelprize.org/sparql";
 
@@ -88,7 +63,7 @@
                 console.log(typeof temp);
                 if (temp.includes("dbpedia")) {
                     links.push(temp);
-                    console.log(temp.includes("dbpedia")+ "   -- "+links.length+'\n');
+                    // console.log(temp.includes("dbpedia") + "   -- " + links.length + '\n');
                 }
                 result += " </td><td>" + jsonObj.results.bindings[i].name.value;
                 // result += " </td><td>" + jsonObj.results.bindings[i].o.value;
@@ -97,27 +72,33 @@
             result += "</table>";
             document.getElementById("results").innerHTML += "</br>" + result;
         }
-        sparqlQueryJson(query1, endpoint1, myCallback1, true);
-        console.log(links.length);
+        var resp = sparqlQueryJson(query1, endpoint1);
+        myCallback1(resp);
+       
         for (let index = 0; index < links.length; index++) {
-            var query = "PREFIX dbo: <http://dbpedia.org/ontology/> " + "select distinct * where { <" + links[index] + "> foaf:name  ?y}";            
-            sparqlQueryJson(query, endpoint2, myCallback2, false);
+            var query = "PREFIX dbo: <http://dbpedia.org/ontology/> " + "select distinct * where { <" + links[index] + "> foaf:name  ?y}";
+            var text = sparqlQueryJson(query, endpoint2);
+            myCallback2(text);
         }
-        
+
+        var ct = 0;
         function myCallback2(str) {
             var jsonObj = eval('(' + str + ')');
-            console.log( jsonObj);
+            console.log(jsonObj);
+            if(jsonObj.results.bindings.length==0) return;
+
             document.getElementById("results").innerHTML += "<p>" + jsonObj.results.bindings[0].y.value + "</p>";
             document.write("<p>" + jsonObj.results.bindings[0].y.value + "</p>");
+            ct+=1
         }
-        // Make the query.
-        // sparqlQueryJson(query2, endpoint2, myCallback, false);
+
+        console.log("len : "+links.length+" -- "+ct);
+            // Make the query.
+            // sparqlQueryJson(query2, endpoint2, myCallback, false);
 
     </script>
 
-    <div id="results">
-        <h2>Sample Data</h2>
-    </div>
+   
 
 </body>
 

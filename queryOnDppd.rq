@@ -4,6 +4,7 @@ where
 {
     ?s ?p ?o.
     ?s a foaf:Person.
+    ?s foaf:name "Thomas Hunt Morgan@en";
     # ?s foaf:name ?name.
 }
 Limit 50
