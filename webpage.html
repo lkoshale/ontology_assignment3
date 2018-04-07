@@ -56,9 +56,22 @@
 
 <body>
     <script>
-        // var endpoint = "http://dbpedia.org/sparql";
-        var endpoint = "http://data.nobelprize.org/sparql";
-        var query = "select * {?s ?p ?o} limit 5";
+        var endpoint1 = "http://data.nobelprize.org/sparql";
+
+        var query1 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"+
+        "select ?s ?name"+
+        "where"+
+        "{"+
+        "    ?s ?p ?o."+
+        "    ?s a foaf:Person."+
+        "    ?s foaf:name ?name."+
+        "}"+
+        "Limit 50";
+
+        var endpoint2 = "http://dbpedia.org/sparql";
+        var query2 = "select * {?s ?p ?o} limit 50";
+
+
 
         // Define a callback function to receive the SPARQL JSON result.
         function myCallback(str) {
@@ -69,23 +82,22 @@
             var result = " <table border='2' cellpadding='9'>";
             for (var i = 0; i < jsonObj.results.bindings.length; i++) {
                 result += " <tr> <td>" + jsonObj.results.bindings[i].s.value;
-                result += " </td><td>" + jsonObj.results.bindings[i].p.value;
-                result += " </td><td>" + jsonObj.results.bindings[i].o.value;
+                result += " </td><td>" + jsonObj.results.bindings[i].name.value;
+                // result += " </td><td>" + jsonObj.results.bindings[i].o.value;
                 result += " </td></tr>";
             }
             result += "</table>";
-            document.getElementById("results").innerHTML = result;
+            document.getElementById("results").innerHTML += "</br>" + result;
         }
 
         // Make the query.
-        sparqlQueryJson(query, endpoint, myCallback, false);
+        sparqlQueryJson(query1, endpoint1, myCallback, false);
+        // sparqlQueryJson(query2, endpoint2, myCallback, false);
 
     </script>
 
     <div id="results">
-        <!-- It may take a few moments for the info to be displayed here...
-        <br/>
-        <br/> Run me in Internet Explorer or I get Cross Domain HTTP Request errors! -->
+        <h2>Sample Data</h2>
     </div>
 
 </body>
