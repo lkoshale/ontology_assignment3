@@ -59,7 +59,7 @@
         var endpoint1 = "http://data.nobelprize.org/sparql";
 
         var query1 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"+
-        "select ?s ?name"+
+        "select ?s ?name "+
         "where"+
         "{"+
         "    ?s ?p ?o."+
@@ -91,7 +91,7 @@
         }
 
         // Make the query.
-        sparqlQueryJson(query1, endpoint1, myCallback, false);
+        sparqlQueryJson(query1, endpoint1, myCallback, true);
         // sparqlQueryJson(query2, endpoint2, myCallback, false);
 
     </script>
