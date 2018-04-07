@@ -59,7 +59,7 @@
         var endpoint1 = "http://data.nobelprize.org/sparql";
 
         var query1 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/>"+
-        "select ?s ?name "+
+        "select Distinct ?s ?name "+
         "where"+
         "{"+
         "    ?s ?p ?o."+

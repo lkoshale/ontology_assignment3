@@ -62,8 +62,8 @@ public class QueryExample {
         }
 
         // DBPedia Endpoint
-        // String szEndpoint = "http://dbpedia.org/sparql";
-        String szEndpoint = "http://data.nobelprize.org/sparql";
+        String szEndpoint = "http://dbpedia.org/sparql";
+        // String szEndpoint = "http://data.nobelprize.org/sparql";
         // Query DBPedia
         try {
             QueryExample q = new QueryExample();
