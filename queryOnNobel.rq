@@ -1,9 +1,0 @@
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-select ?s ?name
-where
-{
-    ?s ?p ?o.
-    ?s a foaf:Person.
-    ?s foaf:name ?name.
-}
-Limit 50
