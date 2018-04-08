@@ -1,13 +1,16 @@
+<!DOCTYPE html>
 <html>
 
 <head>
-
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 </head>
 
 <body>
-        <div id="results">
-                <h2>Sample Data</h2>
-            </div>
+    <div id="results">
+        <h2>Sample Data</h2>
+    </div>
     <script>
         function sparqlQueryJson(queryStr, endpoint) {
             var querypart = "query=" + escape(queryStr);
@@ -33,12 +36,15 @@
     <script>
         var endpoint1 = "http://data.nobelprize.org/sparql";
 
-        var query1 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX owl:<http://www.w3.org/2002/07/owl#> PREFIX nobel: <http://data.nobelprize.org/terms/>  " +
-            "select Distinct ?link ?name " +
+        var query1 = "PREFIX foaf: <http://xmlns.com/foaf/0.1/> PREFIX owl:<http://www.w3.org/2002/07/owl#> PREFIX nobel: <http://data.nobelprize.org/terms/> PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>" +
+            "select Distinct ?link ?name ?label ?motivation" +
             "where" +
             "{" +
             "    ?s a nobel:Laureate." +
             "    ?s foaf:name ?name." +
+            "    ?s nobel:laureateAward ?award." +
+            "    ?award rdfs:label ?label." +
+            "    ?award nobel:motivation ?motivation." +
             "    ?s owl:sameAs ?link." +
             "}" +
             "Limit 50";
@@ -60,46 +66,41 @@
             for (var i = 0; i < jsonObj.results.bindings.length; i++) {
                 result += " <tr> <td>" + jsonObj.results.bindings[i].link.value;
                 var temp = jsonObj.results.bindings[i].link.value;
-                console.log(typeof temp);
                 if (temp.includes("dbpedia")) {
                     links.push(temp);
-                    // console.log(temp.includes("dbpedia") + "   -- " + links.length + '\n');
                 }
                 result += " </td><td>" + jsonObj.results.bindings[i].name.value;
                 // result += " </td><td>" + jsonObj.results.bindings[i].o.value;
                 result += " </td></tr>";
             }
             result += "</table>";
-            document.getElementById("results").innerHTML += "</br>" + result;
+            // document.getElementById("results").innerHTML += "</br>" + result;
         }
         var resp = sparqlQueryJson(query1, endpoint1);
         myCallback1(resp);
-       
+
+        var ct = 0;
         for (let index = 0; index < links.length; index++) {
-            var query = "PREFIX dbo: <http://dbpedia.org/ontology/> " + "select distinct * where { <" + links[index] + "> foaf:name  ?y}";
+            var query = "PREFIX dbo: <http://dbpedia.org/ontology/> " +
+                "select distinct * " +
+                "where " +
+                "{ " +
+                "<" + links[index] + "> foaf:name ?name." +
+                "<" + links[index] + "> dbo:thumbnail ?thumbnail." +
+                "}";
             var text = sparqlQueryJson(query, endpoint2);
             myCallback2(text);
         }
 
-        var ct = 0;
         function myCallback2(str) {
             var jsonObj = eval('(' + str + ')');
-            console.log(jsonObj);
-            if(jsonObj.results.bindings.length==0) return;
-
-            document.getElementById("results").innerHTML += "<p>" + jsonObj.results.bindings[0].y.value + "</p>";
-            document.write("<p>" + jsonObj.results.bindings[0].y.value + "</p>");
-            ct+=1
+            if (jsonObj.results.bindings.length == 0) return;
+            document.getElementById("results").innerHTML += "<p>" + jsonObj.results.bindings[0].name.value + "</p>";
+            document.getElementById("results").innerHTML += "<img src = " + jsonObj.results.bindings[0].thumbnail.value + " >";
+            ct += 1
         }
-
-        console.log("len : "+links.length+" -- "+ct);
-            // Make the query.
-            // sparqlQueryJson(query2, endpoint2, myCallback, false);
-
+        console.log("len : " + links.length + " -- " + ct);
     </script>
-
-   
-
 </body>
 
 </html>
