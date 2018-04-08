@@ -52,6 +52,7 @@
         var endpoint2 = "http://dbpedia.org/sparql";
         var query2 = "select * {?s ?p ?o} limit 50";
         var links = [];
+        var labels = [];
 
 
 
@@ -60,26 +61,20 @@
             // Convert result to JSON
             var jsonObj = eval('(' + str + ')');
 
-
-            // Build up a table of results.
-            var result = " <table border='2' cellpadding='9'>";
             for (var i = 0; i < jsonObj.results.bindings.length; i++) {
-                result += " <tr> <td>" + jsonObj.results.bindings[i].link.value;
-                var temp = jsonObj.results.bindings[i].link.value;
-                if (temp.includes("dbpedia")) {
-                    links.push(temp);
+                var link = jsonObj.results.bindings[i].link.value;
+                var label = jsonObj.results.bindings[i].label.value;
+                if (link.includes("dbpedia")) {
+                    links.push(link);
+                    labels.push(label);
                 }
-                result += " </td><td>" + jsonObj.results.bindings[i].name.value;
-                // result += " </td><td>" + jsonObj.results.bindings[i].o.value;
-                result += " </td></tr>";
             }
-            result += "</table>";
-            // document.getElementById("results").innerHTML += "</br>" + result;
         }
         var resp = sparqlQueryJson(query1, endpoint1);
         myCallback1(resp);
 
         var ct = 0;
+        var result = " <table border='2' cellpadding='9'> <tr><td>Name</td><td>Title</td><td>Image</td></tr>";
         for (let index = 0; index < links.length; index++) {
             var query = "PREFIX dbo: <http://dbpedia.org/ontology/> " +
                 "select distinct * " +
@@ -91,15 +86,20 @@
             var text = sparqlQueryJson(query, endpoint2);
             myCallback2(text);
         }
+        result += "</table>";
+        document.getElementById("results").innerHTML += result;
 
         function myCallback2(str) {
             var jsonObj = eval('(' + str + ')');
-            if (jsonObj.results.bindings.length == 0) return;
-            document.getElementById("results").innerHTML += "<p>" + jsonObj.results.bindings[0].name.value + "</p>";
-            document.getElementById("results").innerHTML += "<img src = " + jsonObj.results.bindings[0].thumbnail.value + " >";
-            ct += 1
+            if (jsonObj.results.bindings.length != 0) {
+                result += " <tr><td>" + jsonObj.results.bindings[0].name.value;
+                result += " </td><td>" + labels[ct];
+                result += " </td><td><img src = " + jsonObj.results.bindings[0].thumbnail.value + " width=128 >";
+                result += " </td></tr>";
+                ct += 1
+            }
+            else ct += 1;
         }
-        console.log("len : " + links.length + " -- " + ct);
     </script>
 </body>
 
