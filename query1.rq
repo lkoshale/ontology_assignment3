@@ -1,0 +1,17 @@
+PREFIX foaf: <http://xmlns.com/foaf/0.1/> 
+PREFIX owl:<http://www.w3.org/2002/07/owl#> 
+PREFIX nobel: <http://data.nobelprize.org/terms/> 
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+select Distinct ?link ?name ?label ?dob 
+where
+{
+    ?s a nobel:Laureate.
+    ?s foaf:name ?name.
+    ?s foaf:birthday ?dob.
+    ?s nobel:laureateAward ?award.
+    ?award rdfs:label ?label.
+    ?award nobel:year ?year.
+    ?s owl:sameAs ?link.
+}
+order by ?year
+Limit 500

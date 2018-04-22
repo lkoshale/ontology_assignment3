@@ -1,0 +1,10 @@
+PREFIX dbo: <http://dbpedia.org/ontology/> 
+PREFIX dbp: <http://dbpedia.org/property/> 
+PREFIX dct: <http://purl.org/dc/terms/> 
+select distinct * 
+where
+{
+    links[index] foaf:name ?name.
+    links[index] dbo:thumbnail ?thumbnail.
+    links[ine dct:description ?description.
+}
